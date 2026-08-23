@@ -1,9 +1,9 @@
-import { Entity, PrimaryColumn, Column, CreateDateColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } from 'typeorm';
 import { TicketOrmEntity } from './ticket.orm-entity';
 
 @Entity('sales')
 export class SaleOrmEntity {
-  @PrimaryColumn({ length: 50 })
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ length: 255 })

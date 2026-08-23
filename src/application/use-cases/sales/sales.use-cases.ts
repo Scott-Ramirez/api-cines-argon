@@ -1,4 +1,5 @@
 import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
+import { randomUUID } from 'crypto';
 import { ISaleRepository, SALE_REPOSITORY } from '../../../domain/repositories/sale.repository.interface';
 import { IShowtimeRepository, SHOWTIME_REPOSITORY } from '../../../domain/repositories/showtime.repository.interface';
 import { IPricingRepository, PRICING_REPOSITORY } from '../../../domain/repositories/pricing.repository.interface';
@@ -79,7 +80,7 @@ export class ProcessSaleUseCase {
     const pricingTiers = await this.pricingRepository.findAll();
     const priceMap = new Map<string, number>(pricingTiers.map((p) => [p.type, p.basePrice]));
 
-    const saleId = 'VNT-' + Date.now().toString().slice(-6);
+    const saleId = randomUUID();
     const nowIso = new Date().toISOString();
     const generatedTickets: TicketModel[] = [];
     let totalAmount = 0;
@@ -94,9 +95,7 @@ export class ProcessSaleUseCase {
       const unitPrice = Number((basePrice * showtime.priceMultiplier).toFixed(2));
 
       for (let i = 0; i < item.quantity; i++) {
-        const ticketSeq = generatedTickets.length + 1;
-        const randomCode = Math.random().toString(36).substring(2, 7).toUpperCase();
-        const ticketId = `TKT-${randomCode}-${ticketSeq}`;
+        const ticketId = randomUUID();
 
         const signature = this.cryptoService.generateTicketSignature(
           ticketId,

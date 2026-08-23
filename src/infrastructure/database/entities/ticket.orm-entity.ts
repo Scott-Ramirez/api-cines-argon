@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { SaleOrmEntity } from './sale.orm-entity';
 import { RoomType } from '../../../domain/models/room.model';
 import { TicketType } from '../../../domain/models/pricing-tier.model';
@@ -6,7 +6,7 @@ import { TicketStatus } from '../../../domain/models/ticket.model';
 
 @Entity('tickets')
 export class TicketOrmEntity {
-  @PrimaryColumn({ length: 50 })
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ length: 50 })

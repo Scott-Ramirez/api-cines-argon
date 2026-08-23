@@ -1,4 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
+import { randomUUID } from 'crypto';
 import { ITicketRepository, TICKET_REPOSITORY } from '../../../domain/repositories/ticket.repository.interface';
 import { IScanLogRepository, SCAN_LOG_REPOSITORY } from '../../../domain/repositories/scan-log.repository.interface';
 import { CryptoService } from '../../../infrastructure/security/crypto.service';
@@ -53,7 +54,7 @@ export class ValidateTicketScanUseCase {
 
     if (!ticket) {
       const log = new ScanLogModel(
-        'LOG-' + Date.now(),
+        randomUUID(),
         ticketId,
         timestamp,
         'NOT_FOUND',
@@ -75,7 +76,7 @@ export class ValidateTicketScanUseCase {
         : 'previamente';
 
       const log = new ScanLogModel(
-        'LOG-' + Date.now(),
+        randomUUID(),
         ticket.id,
         timestamp,
         'ALREADY_USED',
@@ -114,7 +115,7 @@ export class ValidateTicketScanUseCase {
 
     if (ticket.signature !== expectedSignature) {
       const log = new ScanLogModel(
-        'LOG-' + Date.now(),
+        randomUUID(),
         ticket.id,
         timestamp,
         'INVALID_SIGNATURE',
@@ -137,7 +138,7 @@ export class ValidateTicketScanUseCase {
     await this.ticketRepository.save(ticket);
 
     const log = new ScanLogModel(
-      'LOG-' + Date.now(),
+      randomUUID(),
       ticket.id,
       timestamp,
       'VALID',

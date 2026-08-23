@@ -1,9 +1,9 @@
-import { Entity, PrimaryColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 import { ScanResultStatus } from '../../../domain/models/scan-log.model';
 
 @Entity('scan_logs')
 export class ScanLogOrmEntity {
-  @PrimaryColumn({ length: 50 })
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ length: 50 })

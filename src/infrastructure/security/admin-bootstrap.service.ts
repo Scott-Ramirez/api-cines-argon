@@ -1,4 +1,5 @@
 import { Injectable, OnApplicationBootstrap, Logger, Inject } from '@nestjs/common';
+import { randomUUID } from 'crypto';
 import * as bcrypt from 'bcryptjs';
 import { IUserRepository, USER_REPOSITORY } from '../../domain/repositories/user.repository.interface';
 import { UserModel } from '../../domain/models/user.model';
@@ -20,7 +21,7 @@ export class AdminBootstrapService implements OnApplicationBootstrap {
         const hashedPassword = await bcrypt.hash(initialPassword, 10);
 
         const adminUser = new UserModel(
-          'usr-admin',
+          randomUUID(),
           'Administrador General',
           'admin',
           hashedPassword,
@@ -31,6 +32,7 @@ export class AdminBootstrapService implements OnApplicationBootstrap {
 
         await this.userRepository.create(adminUser);
         this.logger.log(`✅ [AdminBootstrap] Usuario Administrador inicial creado en MySQL:`);
+        this.logger.log(`   👉 ID (UUID): ${adminUser.id}`);
         this.logger.log(`   👉 Usuario: admin`);
         this.logger.log(`   👉 Contraseña: ${initialPassword}`);
       } else {
