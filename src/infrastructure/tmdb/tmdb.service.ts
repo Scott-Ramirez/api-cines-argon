@@ -13,7 +13,7 @@ export class TmdbService implements ITmdbService {
   private readonly imageBaseUrl: string;
 
   constructor() {
-    this.apiKey = process.env.TMDB_API_KEY || '';
+    this.apiKey = (process.env.TMDB_API_KEY || '').trim();
     this.baseUrl = process.env.TMDB_BASE_URL || 'https://api.themoviedb.org/3';
     this.imageBaseUrl = process.env.TMDB_IMAGE_BASE_URL || 'https://image.tmdb.org/t/p';
 
@@ -33,7 +33,17 @@ export class TmdbService implements ITmdbService {
   private async fetchTmdb<T>(endpoint: string, params: Record<string, string> = {}): Promise<T> {
     this.ensureApiKey();
     const url = new URL(`${this.baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`);
-    url.searchParams.set('api_key', this.apiKey);
+    const headers: Record<string, string> = {
+      Accept: 'application/json',
+    };
+
+    // Si es un Read Access Token JWT (v4) empieza con "eyJ", usamos Bearer token.
+    // Si es una API Key v3 clásica (ej. "ab92..."), la pasamos como parámetro api_key en la URL.
+    if (this.apiKey.startsWith('eyJ')) {
+      headers['Authorization'] = `Bearer ${this.apiKey}`;
+    } else {
+      url.searchParams.set('api_key', this.apiKey);
+    }
 
     Object.entries(params).forEach(([key, val]) => {
       if (val !== undefined && val !== null) {
@@ -42,11 +52,7 @@ export class TmdbService implements ITmdbService {
     });
 
     try {
-      const response = await fetch(url.toString(), {
-        headers: {
-          Accept: 'application/json',
-        },
-      });
+      const response = await fetch(url.toString(), { headers });
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -152,7 +158,6 @@ export class TmdbService implements ITmdbService {
       throw new NotFoundException(`Película con TMDB ID '${tmdbId}' no encontrada`);
     }
 
-    // Extraer tráiler oficial de YouTube
     let trailerUrl: string | undefined = undefined;
     if (data.videos && Array.isArray(data.videos.results)) {
       const trailer =
@@ -165,17 +170,17 @@ export class TmdbService implements ITmdbService {
       }
     }
 
-    // Extraer director
     let director: string | undefined = undefined;
     if (data.credits && Array.isArray(data.credits.crew)) {
       const dir = data.credits.crew.find((c: any) => c.job === 'Director');
       if (dir) director = dir.name;
     }
 
-    // Extraer clasificación por edades
     let cert: string | undefined = undefined;
     if (data.release_dates && Array.isArray(data.release_dates.results)) {
-      const peRelease = data.release_dates.results.find((r: any) => r.iso_3166_1 === 'PE' || r.iso_3166_1 === 'MX' || r.iso_3166_1 === 'US');
+      const peRelease = data.release_dates.results.find(
+        (r: any) => r.iso_3166_1 === 'PE' || r.iso_3166_1 === 'MX' || r.iso_3166_1 === 'US',
+      );
       if (peRelease && Array.isArray(peRelease.release_dates)) {
         const withCert = peRelease.release_dates.find((d: any) => d.certification);
         if (withCert) cert = withCert.certification;
