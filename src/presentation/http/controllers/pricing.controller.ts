@@ -5,7 +5,6 @@ import {
   SavePricingBatchUseCase,
   SavePricingTierUseCase,
 } from '../../../application/use-cases/pricing/pricing.use-cases';
-import { CreatePricingTierDto, UpdateBatchPricingDto } from '../dtos';
 
 @ApiTags('Pricing')
 @Controller('pricing')
@@ -25,13 +24,14 @@ export class PricingController {
   @Put()
   @ApiOperation({ summary: 'Actualizar lote de tarifas de boletos' })
   @ApiResponse({ status: 200, description: 'Tarifas actualizadas exitosamente' })
-  saveBatch(@Body() dto: UpdateBatchPricingDto) {
-    return this.savePricingBatchUseCase.execute(dto.tiers);
+  saveBatch(@Body() body: any) {
+    const tiers = Array.isArray(body) ? body : (body?.tiers || (body?.type ? [body] : []));
+    return this.savePricingBatchUseCase.execute(tiers);
   }
 
   @Post()
   @ApiOperation({ summary: 'Crear o actualizar una tarifa individual' })
-  createOrUpdate(@Body() dto: CreatePricingTierDto) {
-    return this.savePricingTierUseCase.execute(dto);
+  createOrUpdate(@Body() body: any) {
+    return this.savePricingTierUseCase.execute(body);
   }
 }

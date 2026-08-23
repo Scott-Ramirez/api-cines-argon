@@ -21,8 +21,18 @@ export class SavePricingBatchUseCase {
     private readonly pricingRepository: IPricingRepository,
   ) {}
 
-  async execute(tiers: { id?: string; type: TicketType; label: string; description: string; basePrice: number }[]): Promise<PricingTierModel[]> {
-    const models = tiers.map(t => new PricingTierModel(t.id || '', t.type, t.label, t.description, t.basePrice));
+  async execute(tiers: any): Promise<PricingTierModel[]> {
+    const list = Array.isArray(tiers) ? tiers : (tiers?.tiers || (tiers ? [tiers] : []));
+    const models = list.map(
+      (t: any) =>
+        new PricingTierModel(
+          t.id || '',
+          t.type,
+          t.label || t.type,
+          t.description || '',
+          Number(t.basePrice) || 0,
+        ),
+    );
     return this.pricingRepository.saveBatch(models);
   }
 }
@@ -34,8 +44,14 @@ export class SavePricingTierUseCase {
     private readonly pricingRepository: IPricingRepository,
   ) {}
 
-  async execute(tier: { id?: string; type: TicketType; label: string; description: string; basePrice: number }): Promise<PricingTierModel> {
-    const model = new PricingTierModel(tier.id || '', tier.type, tier.label, tier.description, tier.basePrice);
+  async execute(tier: any): Promise<PricingTierModel> {
+    const model = new PricingTierModel(
+      tier.id || '',
+      tier.type,
+      tier.label || tier.type,
+      tier.description || '',
+      Number(tier.basePrice) || 0,
+    );
     return this.pricingRepository.saveOne(model);
   }
 }

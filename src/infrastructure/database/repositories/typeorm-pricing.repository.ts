@@ -35,11 +35,12 @@ export class TypeormPricingRepository implements IPricingRepository {
   async saveOne(tier: PricingTierModel): Promise<PricingTierModel> {
     let existing = await this.repo.findOne({ where: { type: tier.type } });
     if (existing) {
-      existing.label = tier.label;
-      existing.description = tier.description;
-      existing.basePrice = tier.basePrice;
+      if (tier.label) existing.label = tier.label;
+      if (tier.description) existing.description = tier.description;
+      existing.basePrice = Number(tier.basePrice);
     } else {
       existing = PricingTierMapper.toOrm(tier);
+      existing.basePrice = Number(tier.basePrice);
     }
     const saved = await this.repo.save(existing);
     return PricingTierMapper.toDomain(saved);
