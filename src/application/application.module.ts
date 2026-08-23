@@ -30,6 +30,15 @@ import { ValidateTicketScanUseCase, GetScanLogsUseCase } from './use-cases/valid
 // Dashboard Use Cases
 import { GetDashboardStatsUseCase } from './use-cases/dashboard/dashboard.use-cases';
 
+// TMDB Use Cases
+import {
+  SearchTmdbMoviesUseCase,
+  GetTmdbNowPlayingUseCase,
+  GetTmdbPopularUseCase,
+  GetTmdbMovieDetailsUseCase,
+  ImportTmdbMovieUseCase,
+} from './use-cases/tmdb/tmdb.use-cases';
+
 const useCases = [
   // Auth
   LoginAdminUseCase,
@@ -87,6 +96,13 @@ const useCases = [
 
   // Dashboard
   GetDashboardStatsUseCase,
+
+  // TMDB
+  SearchTmdbMoviesUseCase,
+  GetTmdbNowPlayingUseCase,
+  GetTmdbPopularUseCase,
+  GetTmdbMovieDetailsUseCase,
+  ImportTmdbMovieUseCase,
 ];
 
 @Module({

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './infrastructure/database/database.module';
 import { SecurityModule } from './infrastructure/security/security.module';
+import { TmdbModule } from './infrastructure/tmdb/tmdb.module';
 import { ApplicationModule } from './application/application.module';
 import { PresentationModule } from './presentation/presentation.module';
 
@@ -13,6 +14,7 @@ import { PresentationModule } from './presentation/presentation.module';
     }),
     DatabaseModule,
     SecurityModule,
+    TmdbModule,
     ApplicationModule,
     PresentationModule,
   ],

@@ -11,6 +11,7 @@ import { SalesController } from './http/controllers/sales.controller';
 import { TicketsController } from './http/controllers/tickets.controller';
 import { ValidatorController } from './http/controllers/validator.controller';
 import { DashboardController } from './http/controllers/dashboard.controller';
+import { TmdbController } from './http/controllers/tmdb.controller';
 
 const controllers = [
   AuthController,
@@ -23,6 +24,7 @@ const controllers = [
   TicketsController,
   ValidatorController,
   DashboardController,
+  TmdbController,
 ];
 
 @Module({
