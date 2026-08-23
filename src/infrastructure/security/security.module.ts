@@ -3,6 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { CryptoService } from './crypto.service';
 import { JwtStrategy } from './jwt.strategy';
+import { AdminBootstrapService } from './admin-bootstrap.service';
 
 @Global()
 @Module({
@@ -17,7 +18,7 @@ import { JwtStrategy } from './jwt.strategy';
       }),
     }),
   ],
-  providers: [CryptoService, JwtStrategy],
-  exports: [CryptoService, JwtStrategy, JwtModule, PassportModule],
+  providers: [CryptoService, JwtStrategy, AdminBootstrapService],
+  exports: [CryptoService, JwtStrategy, JwtModule, PassportModule, AdminBootstrapService],
 })
 export class SecurityModule {}
