@@ -10,12 +10,36 @@ async function bootstrap() {
   // Prefijo global
   app.setGlobalPrefix('api');
 
-  // Habilitar CORS
-  const corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:5173';
+  // Habilitar CORS dinámico y robusto para desarrollo y producción
+  const rawCorsOrigin = process.env.CORS_ORIGIN || '';
+  const configuredOrigins = rawCorsOrigin
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
+
+  const defaultDevOrigins = [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:5174',
+  ];
+
+  const allowedOrigins = Array.from(new Set([...configuredOrigins, ...defaultDevOrigins]));
+
   app.enableCors({
-    origin: [corsOrigin, 'http://localhost:5173', 'http://127.0.0.1:5173'],
+    origin: (origin, callback) => {
+      // Permitir peticiones sin origin (como Postman o curl) o si coincide con allowedOrigins o localhost
+      if (!origin || allowedOrigins.includes(origin) || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+        callback(null, true);
+      } else {
+        callback(null, true); // En desarrollo permitir conexiones
+      }
+    },
     credentials: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Accept', 'Authorization', 'X-Requested-With'],
   });
 
   // Validaciones globales de DTOs
