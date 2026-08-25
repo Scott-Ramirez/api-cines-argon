@@ -13,6 +13,10 @@ import { ValidatorController } from './http/controllers/validator.controller';
 import { DashboardController } from './http/controllers/dashboard.controller';
 import { TmdbController } from './http/controllers/tmdb.controller';
 
+import { ValidatorGateway } from './gateways/validator.gateway';
+
+import { PaymentsController } from './http/controllers/payments.controller';
+
 const controllers = [
   AuthController,
   MoviesController,
@@ -21,14 +25,18 @@ const controllers = [
   PricingController,
   HeroSlidesController,
   SalesController,
+  PaymentsController,
   TicketsController,
   ValidatorController,
   DashboardController,
   TmdbController,
 ];
 
+
 @Module({
   imports: [ApplicationModule],
   controllers: [...controllers],
+  providers: [ValidatorGateway],
+  exports: [ValidatorGateway],
 })
 export class PresentationModule {}

@@ -27,9 +27,28 @@ export class SaleOrmEntity {
   @Column({ type: 'int', default: 1 })
   totalTickets: number;
 
+  @Column({ length: 50, default: 'CASH' })
+  paymentMethod: string;
+
+  @Column({ length: 100, nullable: true })
+  externalPaymentId?: string;
+
+  @Column({ length: 150, nullable: true })
+  customerName?: string;
+
+  @Column({ length: 150, nullable: true })
+  customerEmail?: string;
+
+  @Column({ length: 30, nullable: true })
+  customerPhone?: string;
+
+  @Column({ length: 30, default: 'APPROVED' })
+  status: string;
+
   @OneToMany(() => TicketOrmEntity, (ticket) => ticket.sale)
   tickets: TicketOrmEntity[];
 
   @CreateDateColumn()
   createdAt: Date;
 }
+

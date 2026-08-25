@@ -37,8 +37,24 @@ export class CreateRoomUseCase {
     private readonly roomRepository: IRoomRepository,
   ) {}
 
-  async execute(data: { id?: string; name: string; type: RoomType; capacity: number; soundSystem: string }): Promise<RoomModel> {
-    const room = new RoomModel(data.id || '', data.name, data.type, data.capacity, data.soundSystem);
+  async execute(data: {
+    id?: string;
+    name: string;
+    type: RoomType;
+    capacity: number;
+    soundSystem: string;
+    rows?: number;
+    columns?: number;
+  }): Promise<RoomModel> {
+    const room = new RoomModel(
+      data.id || '',
+      data.name,
+      data.type,
+      data.capacity,
+      data.soundSystem,
+      data.rows ?? 5,
+      data.columns ?? 6,
+    );
     return this.roomRepository.create(room);
   }
 }

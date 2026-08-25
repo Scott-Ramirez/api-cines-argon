@@ -13,7 +13,7 @@ import {
   ValidateNested,
   ArrayMinSize,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { MovieRating, MovieStatus } from '../../../domain/models/movie.model';
 import { RoomType } from '../../../domain/models/room.model';
 import { TicketType } from '../../../domain/models/pricing-tier.model';
@@ -128,8 +128,9 @@ export class CreateRoomDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ enum: ['2D Estándar', '3D Dolby', 'IMAX Laser', 'VIP Premium'], example: 'VIP Premium' })
-  @IsEnum(['2D Estándar', '3D Dolby', 'IMAX Laser', 'VIP Premium'])
+  @ApiProperty({ example: 'Home Cinema Argón' })
+  @IsString()
+  @IsNotEmpty()
   type: RoomType;
 
   @ApiProperty({ example: 25 })
@@ -141,6 +142,18 @@ export class CreateRoomDto {
   @IsString()
   @IsNotEmpty()
   soundSystem: string;
+
+  @ApiPropertyOptional({ example: 5 })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  rows?: number;
+
+  @ApiPropertyOptional({ example: 6 })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  columns?: number;
 }
 
 export class UpdateRoomDto extends PartialType(CreateRoomDto) {}
@@ -295,12 +308,26 @@ export class UpdateHeroSlideDto extends PartialType(CreateHeroSlideDto) {}
 export class CartItemDto {
   @ApiProperty({ enum: ['GENERAL', 'NINO', 'ADULTO_MAYOR', 'PROMO_DUO'], example: 'GENERAL' })
   @IsEnum(['GENERAL', 'NINO', 'ADULTO_MAYOR', 'PROMO_DUO'])
+  @Transform(({ value, obj }) => value || obj.ticketType)
   type: TicketType;
 
   @ApiProperty({ example: 2 })
   @IsInt()
   @Min(1)
+  @Transform(({ value, obj }) => (value !== undefined ? value : obj.count))
   quantity: number;
+
+  @IsOptional()
+  ticketType?: TicketType;
+
+  @IsOptional()
+  count?: number;
+
+  @IsOptional()
+  unitPrice?: number;
+
+  @IsOptional()
+  subtotal?: number;
 }
 
 export class ProcessSaleDto {
@@ -308,6 +335,16 @@ export class ProcessSaleDto {
   @IsString()
   @IsNotEmpty()
   showtimeId: string;
+
+  @ApiPropertyOptional({ example: 'mov-1' })
+  @IsOptional()
+  @IsString()
+  movieId?: string;
+
+  @ApiPropertyOptional({ example: ['A-1', 'A-2'], type: [String] })
+  @IsOptional()
+  @IsArray()
+  seatCodes?: string[];
 
   @ApiProperty({ type: [CartItemDto] })
   @IsArray()
@@ -325,6 +362,21 @@ export class ProcessSaleDto {
   @IsNumber()
   @Min(0)
   paidAmount: number;
+
+  @ApiPropertyOptional({ example: 50.00 })
+  @IsOptional()
+  @IsNumber()
+  totalAmount?: number;
+
+  @ApiPropertyOptional({ example: 0.00 })
+  @IsOptional()
+  @IsNumber()
+  changeAmount?: number;
+
+  @ApiPropertyOptional({ example: 'EFECTIVO' })
+  @IsOptional()
+  @IsString()
+  paymentMethod?: string;
 }
 
 // --- VALIDATOR DTOS ---
@@ -337,13 +389,78 @@ export class ScanTicketDto {
   @IsNotEmpty({ message: 'El código escaneado es obligatorio' })
   rawScanString: string;
 
-  @ApiPropertyOptional({ enum: ['USB_SCANNER', 'CAMERA', 'MANUAL'], default: 'USB_SCANNER' })
+  @ApiPropertyOptional({ example: 'CAMERA' })
   @IsOptional()
-  @IsEnum(['USB_SCANNER', 'CAMERA', 'MANUAL'])
-  scanType?: 'USB_SCANNER' | 'CAMERA' | 'MANUAL';
+  @IsString()
+  scanType?: string;
 
   @ApiPropertyOptional({ example: 'Portería Principal' })
   @IsOptional()
   @IsString()
   validatedBy?: string;
 }
+
+// --- MERCADO PAGO PAYMENT DTOS ---
+export class CreatePaymentPreferenceDto {
+  @ApiProperty({ example: 'st-1', description: 'ID de la función de cine' })
+  @IsString()
+  @IsNotEmpty({ message: 'El ID de la función es obligatorio' })
+  showtimeId: string;
+
+  @ApiProperty({ type: [CartItemDto], description: 'Boletos seleccionados' })
+  @IsArray()
+  @ArrayMinSize(1, { message: 'Debe seleccionar al menos un boleto' })
+  @ValidateNested({ each: true })
+  @Type(() => CartItemDto)
+  items: CartItemDto[];
+
+  @ApiProperty({ example: 'Juan Pérez', description: 'Nombre completo del cliente' })
+  @IsString()
+  @IsNotEmpty({ message: 'El nombre del cliente es obligatorio' })
+  customerName: string;
+
+  @ApiProperty({ example: 'juan.perez@gmail.com', description: 'Correo para el envío de entradas' })
+  @IsString()
+  @IsNotEmpty({ message: 'El correo electrónico es obligatorio' })
+  customerEmail: string;
+
+  @ApiPropertyOptional({ example: '999123456', description: 'Teléfono o WhatsApp del cliente' })
+  @IsOptional()
+  @IsString()
+  customerPhone?: string;
+}
+
+export class MercadoPagoWebhookDto {
+  @ApiPropertyOptional({ example: 'payment' })
+  @IsOptional()
+  type?: string;
+
+  @ApiPropertyOptional({ example: 'payment' })
+  @IsOptional()
+  topic?: string;
+
+  @ApiPropertyOptional({ example: 'payment.created' })
+  @IsOptional()
+  action?: string;
+
+  @ApiPropertyOptional({ example: { id: '123456789' } })
+  @IsOptional()
+  data?: { id: string };
+
+  @ApiPropertyOptional({ example: '123456789' })
+  @IsOptional()
+  id?: string;
+}
+
+export class RefundPaymentDto {
+  @ApiProperty({ example: 'sale-uuid-here', description: 'ID de la venta a reembolsar' })
+  @IsString()
+  @IsNotEmpty({ message: 'El ID de la venta es obligatorio' })
+  saleId: string;
+
+  @ApiPropertyOptional({ example: 'Cliente solicitó cancelación con 24h de anticipación' })
+  @IsOptional()
+  @IsString()
+  reason?: string;
+}
+

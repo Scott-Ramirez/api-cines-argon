@@ -19,13 +19,21 @@ import { GetPricingUseCase, SavePricingBatchUseCase, SavePricingTierUseCase } fr
 import { GetHeroSlidesUseCase, GetHeroSlideByIdUseCase, CreateHeroSlideUseCase, UpdateHeroSlideUseCase, ToggleHeroSlideUseCase, DeleteHeroSlideUseCase } from './use-cases/hero-slides/hero-slides.use-cases';
 
 // Sales Use Cases
-import { GetSalesUseCase, GetSaleByIdUseCase, ProcessSaleUseCase } from './use-cases/sales/sales.use-cases';
+import {
+  GetSalesUseCase,
+  GetSaleByIdUseCase,
+  ProcessSaleUseCase,
+  CreateMercadoPagoPreferenceUseCase,
+  ProcessMercadoPagoWebhookUseCase,
+  RefundSaleUseCase,
+} from './use-cases/sales/sales.use-cases';
+
 
 // Tickets Use Cases
 import { GetTicketsUseCase, GetTicketByIdUseCase, GetTicketsBySaleUseCase, CancelTicketUseCase } from './use-cases/tickets/tickets.use-cases';
 
 // Validator Use Cases
-import { ValidateTicketScanUseCase, GetScanLogsUseCase } from './use-cases/validator/validator.use-cases';
+import { ValidateTicketScanUseCase, GetScanLogsUseCase, ClearScanLogsUseCase } from './use-cases/validator/validator.use-cases';
 
 // Dashboard Use Cases
 import { GetDashboardStatsUseCase } from './use-cases/dashboard/dashboard.use-cases';
@@ -83,6 +91,10 @@ const useCases = [
   GetSalesUseCase,
   GetSaleByIdUseCase,
   ProcessSaleUseCase,
+  CreateMercadoPagoPreferenceUseCase,
+  ProcessMercadoPagoWebhookUseCase,
+  RefundSaleUseCase,
+
 
   // Tickets
   GetTicketsUseCase,
@@ -93,6 +105,7 @@ const useCases = [
   // Validator
   ValidateTicketScanUseCase,
   GetScanLogsUseCase,
+  ClearScanLogsUseCase,
 
   // Dashboard
   GetDashboardStatsUseCase,
@@ -105,8 +118,12 @@ const useCases = [
   ImportTmdbMovieUseCase,
 ];
 
+import { MercadoPagoModule } from '../infrastructure/mercadopago/mercadopago.module';
+
 @Module({
+  imports: [MercadoPagoModule],
   providers: [...useCases],
   exports: [...useCases],
 })
 export class ApplicationModule {}
+

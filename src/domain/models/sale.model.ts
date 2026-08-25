@@ -11,6 +11,13 @@ export class SaleModel {
     public cashierName: string = 'Admin',
     public totalTickets: number = 1,
     public tickets: TicketModel[] = [],
+    public paymentMethod: string = 'CASH',
+    public externalPaymentId?: string,
+    public customerName?: string,
+    public customerEmail?: string,
+    public customerPhone?: string,
+    public status: string = 'APPROVED',
     public createdAt?: Date,
   ) {}
 }
+

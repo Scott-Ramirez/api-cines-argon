@@ -9,4 +9,7 @@ export interface IShowtimeRepository {
   update(id: string, showtime: Partial<ShowtimeModel>): Promise<ShowtimeModel>;
   delete(id: string): Promise<void>;
   updateAvailableSeats(id: string, availableSeats: number): Promise<void>;
+  decrementAvailableSeats(id: string, count: number): Promise<boolean>;
+  incrementAvailableSeats(id: string, count: number): Promise<void>;
 }
+

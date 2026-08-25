@@ -26,4 +26,8 @@ export class TypeormScanLogRepository implements IScanLogRepository {
     });
     return list.map(ScanLogMapper.toDomain);
   }
+
+  async clearAll(): Promise<void> {
+    await this.repo.clear();
+  }
 }

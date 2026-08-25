@@ -91,6 +91,8 @@ export class RoomMapper {
       orm.type,
       orm.capacity,
       orm.soundSystem,
+      orm.rows ?? 5,
+      orm.columns ?? 6,
       orm.createdAt,
       orm.updatedAt,
     );
@@ -103,6 +105,8 @@ export class RoomMapper {
     if (model.type !== undefined) orm.type = model.type;
     if (model.capacity !== undefined) orm.capacity = model.capacity;
     if (model.soundSystem !== undefined) orm.soundSystem = model.soundSystem;
+    if (model.rows !== undefined) orm.rows = model.rows;
+    if (model.columns !== undefined) orm.columns = model.columns;
     return orm;
   }
 }
@@ -260,6 +264,12 @@ export class SaleMapper {
       orm.cashierName,
       orm.totalTickets,
       orm.tickets ? orm.tickets.map(TicketMapper.toDomain) : [],
+      orm.paymentMethod || 'CASH',
+      orm.externalPaymentId,
+      orm.customerName,
+      orm.customerEmail,
+      orm.customerPhone,
+      orm.status || 'APPROVED',
       orm.createdAt,
     );
   }
@@ -274,6 +284,12 @@ export class SaleMapper {
     orm.changeAmount = model.changeAmount;
     orm.cashierName = model.cashierName;
     orm.totalTickets = model.totalTickets;
+    orm.paymentMethod = model.paymentMethod;
+    orm.externalPaymentId = model.externalPaymentId;
+    orm.customerName = model.customerName;
+    orm.customerEmail = model.customerEmail;
+    orm.customerPhone = model.customerPhone;
+    orm.status = model.status;
     return orm;
   }
 }

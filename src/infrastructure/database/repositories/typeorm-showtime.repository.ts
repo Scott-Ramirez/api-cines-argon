@@ -57,4 +57,24 @@ export class TypeormShowtimeRepository implements IShowtimeRepository {
   async updateAvailableSeats(id: string, availableSeats: number): Promise<void> {
     await this.repo.update(id, { availableSeats });
   }
+
+  async decrementAvailableSeats(id: string, count: number): Promise<boolean> {
+    const result = await this.repo
+      .createQueryBuilder()
+      .update(ShowtimeOrmEntity)
+      .set({ availableSeats: () => `availableSeats - ${count}` })
+      .where('id = :id AND availableSeats >= :count', { id, count })
+      .execute();
+    return (result.affected ?? 0) > 0;
+  }
+
+  async incrementAvailableSeats(id: string, count: number): Promise<void> {
+    await this.repo
+      .createQueryBuilder()
+      .update(ShowtimeOrmEntity)
+      .set({ availableSeats: () => `availableSeats + ${count}` })
+      .where('id = :id', { id })
+      .execute();
+  }
 }
+

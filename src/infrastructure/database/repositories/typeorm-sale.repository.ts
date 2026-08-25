@@ -31,6 +31,36 @@ export class TypeormSaleRepository implements ISaleRepository {
     return item ? SaleMapper.toDomain(item) : null;
   }
 
+  async findByExternalPaymentId(externalPaymentId: string): Promise<SaleModel | null> {
+    const item = await this.repo.findOne({
+      where: { externalPaymentId },
+      relations: ['tickets'],
+    });
+    return item ? SaleMapper.toDomain(item) : null;
+  }
+
+  async update(id: string, partial: Partial<SaleModel>): Promise<SaleModel | null> {
+    await this.repo.update(id, partial as any);
+    return this.findById(id);
+  }
+
+  async cancelSaleAndTickets(saleId: string): Promise<void> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      await queryRunner.manager.update(SaleOrmEntity, { id: saleId }, { status: 'REFUNDED' });
+      await queryRunner.manager.update(TicketOrmEntity, { saleId }, { status: 'CANCELLED' as any });
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
   async createWithTickets(sale: SaleModel): Promise<SaleModel> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -59,8 +89,12 @@ export class TypeormSaleRepository implements ISaleRepository {
   }
 
   async getTotalRevenue(): Promise<number> {
-    const sales = await this.repo.find({ select: ['totalAmount'] });
+    const sales = await this.repo.find({ 
+      where: { status: 'APPROVED' },
+      select: ['totalAmount'] 
+    });
     const total = sales.reduce((acc, curr) => acc + Number(curr.totalAmount), 0);
     return Number(total.toFixed(2));
   }
 }
+

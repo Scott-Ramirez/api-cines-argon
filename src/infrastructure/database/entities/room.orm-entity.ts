@@ -16,6 +16,12 @@ export class RoomOrmEntity {
   @Column({ type: 'int', default: 25 })
   capacity: number;
 
+  @Column({ type: 'int', default: 5 })
+  rows: number;
+
+  @Column({ type: 'int', default: 6 })
+  columns: number;
+
   @Column({ length: 150, default: 'Dolby Atmos 7.1.4 Surround' })
   soundSystem: string;
 

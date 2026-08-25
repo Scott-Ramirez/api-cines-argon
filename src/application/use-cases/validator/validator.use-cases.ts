@@ -8,7 +8,7 @@ import { ScanLogModel } from '../../../domain/models/scan-log.model';
 
 export interface ScanTicketInput {
   rawScanString: string;
-  scanType?: 'USB_SCANNER' | 'CAMERA' | 'MANUAL';
+  scanType?: string;
   validatedBy?: string;
 }
 
@@ -16,7 +16,7 @@ export interface ScanResultOutput {
   success: boolean;
   ticket?: TicketModel;
   reason: string;
-  scanType: 'USB_SCANNER' | 'CAMERA' | 'MANUAL';
+  scanType: string;
   timestamp: string;
 }
 
@@ -167,5 +167,17 @@ export class GetScanLogsUseCase {
 
   async execute(limit: number = 50): Promise<ScanLogModel[]> {
     return this.scanLogRepository.findRecent(limit);
+  }
+}
+
+@Injectable()
+export class ClearScanLogsUseCase {
+  constructor(
+    @Inject(SCAN_LOG_REPOSITORY)
+    private readonly scanLogRepository: IScanLogRepository,
+  ) {}
+
+  async execute(): Promise<void> {
+    return this.scanLogRepository.clearAll();
   }
 }
