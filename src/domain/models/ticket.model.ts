@@ -22,6 +22,7 @@ export class TicketModel {
     public validatedBy?: string,
     public signature: string = '',
     public createdAt?: Date,
+    public seat: string = 'A-1',
   ) {}
 
   markAsUsed(validatedBy: string): void {

@@ -227,6 +227,7 @@ export class TicketMapper {
       orm.validatedBy,
       orm.signature,
       orm.createdAt,
+      orm.seat || 'A-1',
     );
   }
 
@@ -248,6 +249,7 @@ export class TicketMapper {
     orm.usedAt = model.usedAt;
     orm.validatedBy = model.validatedBy;
     orm.signature = model.signature;
+    orm.seat = model.seat || 'A-1';
     return orm;
   }
 }

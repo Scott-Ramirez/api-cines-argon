@@ -58,6 +58,9 @@ export class TicketOrmEntity {
   @Column({ length: 100 })
   signature: string;
 
+  @Column({ length: 50, default: 'A-1' })
+  seat: string;
+
   @CreateDateColumn()
   createdAt: Date;
 }

@@ -118,6 +118,7 @@ export class ProcessSaleUseCase {
     const roomName = showtime.room ? showtime.room.name : 'Sala Principal';
     const roomType = showtime.room ? showtime.room.type : 'VIP Premium';
 
+    let globalTicketIndex = 0;
     for (const item of input.items) {
       const qty = item.quantity ?? item.count ?? 0;
       if (qty <= 0) continue;
@@ -127,6 +128,8 @@ export class ProcessSaleUseCase {
 
       for (let i = 0; i < qty; i++) {
         const ticketId = randomUUID();
+        const seat = input.seatCodes?.[globalTicketIndex] || `A-${globalTicketIndex + 1}`;
+        globalTicketIndex++;
 
         const signature = this.cryptoService.generateTicketSignature(
           ticketId,
@@ -152,6 +155,8 @@ export class ProcessSaleUseCase {
           undefined,
           undefined,
           signature,
+          undefined,
+          seat,
         );
 
         generatedTickets.push(ticket);
@@ -339,8 +344,11 @@ export class ProcessMercadoPagoWebhookUseCase {
 
     const unitPrice = totalTickets > 0 ? Number((totalAmount / totalTickets).toFixed(2)) : totalAmount;
 
+    const seatCodes: string[] = metadata.seat_codes ? (Array.isArray(metadata.seat_codes) ? metadata.seat_codes : metadata.seat_codes.split(',')) : [];
+
     for (let i = 0; i < totalTickets; i++) {
       const ticketId = randomUUID();
+      const seat = seatCodes[i] || `A-${i + 1}`;
       const signature = this.cryptoService.generateTicketSignature(
         ticketId,
         showtime.id,
@@ -365,6 +373,8 @@ export class ProcessMercadoPagoWebhookUseCase {
         undefined,
         undefined,
         signature,
+        undefined,
+        seat,
       );
 
       generatedTickets.push(ticket);
