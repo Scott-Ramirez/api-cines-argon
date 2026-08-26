@@ -41,7 +41,7 @@ export class CreateHeroSlideUseCase {
     id?: string;
     title: string;
     tagline: string;
-    time: string;
+    time?: string;
     rating: string;
     durationMinutes?: number;
     genres: string[];
@@ -56,7 +56,7 @@ export class CreateHeroSlideUseCase {
       data.id || '',
       data.title,
       data.tagline,
-      data.time,
+      data.time || '',
       data.rating,
       data.durationMinutes,
       data.genres,

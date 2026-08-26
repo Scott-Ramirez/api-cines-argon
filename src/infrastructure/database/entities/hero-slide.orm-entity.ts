@@ -11,8 +11,8 @@ export class HeroSlideOrmEntity {
   @Column({ length: 255 })
   tagline: string;
 
-  @Column({ length: 50 })
-  time: string;
+  @Column({ length: 50, nullable: true, default: '' })
+  time?: string;
 
   @Column({ length: 50 })
   rating: string;

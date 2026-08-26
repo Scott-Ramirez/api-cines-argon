@@ -252,10 +252,10 @@ export class CreateHeroSlideDto {
   @IsNotEmpty()
   tagline: string;
 
-  @ApiProperty({ example: '5:30 PM' })
+  @ApiPropertyOptional({ example: '5:30 PM' })
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  time: string;
+  time?: string;
 
   @ApiProperty({ example: 'APT (Todo Público)' })
   @IsString()
