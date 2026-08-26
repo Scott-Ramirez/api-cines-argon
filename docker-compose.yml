@@ -9,26 +9,16 @@ services:
     container_name: cines_argon_api
     restart: unless-stopped
     ports:
-      - "4000:4000"
+      - "${PORT:-4000}:${PORT:-4000}"
+    env_file:
+      - .env
     environment:
-      - NODE_ENV=production
-      - PORT=4000
-      - DB_HOST=mysql_db
-      - DB_PORT=3306
-      - DB_USERNAME=argon_user
-      - DB_PASSWORD=argon_password_2026
-      - DB_DATABASE=cines_argon
-      - DB_SYNCHRONIZE=true
-      - JWT_SECRET=ARGON_CINEMA_SUPER_SECRET_JWT_KEY_2026
-      - JWT_EXPIRES_IN=7d
-      - TICKET_SIGNATURE_SALT=ARGON_CINEMA_SECURE_HMAC_SALT_2026
-      - CORS_ORIGIN=*
-      - TMDB_API_KEY=ab92f027bd3f46fceace14bb421518b6
-      - TMDB_BASE_URL=https://api.themoviedb.org/3
-      - TMDB_IMAGE_BASE_URL=https://image.tmdb.org/t/p
-      - MERCADOPAGO_PUBLIC_KEY=APP_USR-d0b2247c-343c-459a-8dc4-3c05b5617848
-      - MERCADOPAGO_ACCESS_TOKEN=APP_USR-1202239103592977-082510-c5c77d30a20788e8c93cdebfc884080e-3641061780
-      - FRONTEND_URL=http://localhost:5173
+      - NODE_ENV=${NODE_ENV:-production}
+      - DB_HOST=${DB_HOST:-mysql_db}
+      - DB_PORT=${DB_PORT:-3306}
+      - DB_USERNAME=${DB_USERNAME:-argon_user}
+      - DB_PASSWORD=${DB_PASSWORD:-argon_password_2026}
+      - DB_DATABASE=${DB_DATABASE:-cines_argon}
     depends_on:
       - mysql_db
     networks:
@@ -40,10 +30,10 @@ services:
     container_name: cines_argon_mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: root_password_2026
-      MYSQL_DATABASE: cines_argon
-      MYSQL_USER: argon_user
-      MYSQL_PASSWORD: argon_password_2026
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-${DB_PASSWORD:-root_password_2026}}
+      MYSQL_DATABASE: ${DB_DATABASE:-cines_argon}
+      MYSQL_USER: ${DB_USERNAME:-argon_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-argon_password_2026}
     ports:
       - "3307:3306"
     volumes:
