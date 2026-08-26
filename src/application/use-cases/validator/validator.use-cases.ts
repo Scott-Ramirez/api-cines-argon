@@ -39,9 +39,9 @@ export class ValidateTicketScanUseCase {
     });
 
     const parsed = this.cryptoService.parseScannedPayload(input.rawScanString);
-    const ticketId = parsed.ticketId.trim();
+    const searchKey = (parsed.ticketId || input.rawScanString).trim();
 
-    if (!ticketId) {
+    if (!searchKey) {
       return {
         success: false,
         reason: 'Código vacío o formato ilegible',
@@ -50,12 +50,12 @@ export class ValidateTicketScanUseCase {
       };
     }
 
-    const ticket = await this.ticketRepository.findById(ticketId);
+    const ticket = await this.ticketRepository.findByIdOrSignature(searchKey);
 
     if (!ticket) {
       const log = new ScanLogModel(
         randomUUID(),
-        ticketId,
+        searchKey,
         timestamp,
         'NOT_FOUND',
         'Boleto inexistente en la base de datos',
@@ -64,7 +64,7 @@ export class ValidateTicketScanUseCase {
 
       return {
         success: false,
-        reason: `Boleto '${ticketId}' no encontrado en el sistema`,
+        reason: `Boleto '${searchKey.substring(0, searchKey.length > 16 ? 16 : searchKey.length)}' no encontrado en el sistema`,
         scanType,
         timestamp,
       };

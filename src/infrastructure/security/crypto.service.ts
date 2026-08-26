@@ -37,7 +37,7 @@ export class CryptoService {
     raw: string;
   } {
     const clean = raw.trim();
-    if (clean.startsWith('ARGON-V1|')) {
+    if (clean.startsWith('ARGON-V1|') || clean.startsWith('ARGON|')) {
       const parts = clean.split('|');
       return {
         ticketId: parts[1] || '',
