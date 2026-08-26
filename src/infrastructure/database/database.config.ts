@@ -27,7 +27,7 @@ export const getDatabaseConfig = (): TypeOrmModuleOptions => ({
     TicketOrmEntity,
     ScanLogOrmEntity,
   ],
-  synchronize: process.env.DB_SYNCHRONIZE === 'true' || process.env.NODE_ENV !== 'production',
+  synchronize: process.env.DB_SYNCHRONIZE !== 'false',
   logging: process.env.NODE_ENV === 'development',
   ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
 });
